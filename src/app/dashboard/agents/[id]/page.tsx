@@ -118,8 +118,8 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                                 >
                                     <div
                                         className={`max-w-[70%] rounded-2xl px-4 py-2 ${msg.role === "user"
-                                                ? "bg-primary-600 text-white"
-                                                : "bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-white"
+                                            ? "bg-primary-600 text-white"
+                                            : "bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-white"
                                             }`}
                                     >
                                         {msg.content}
@@ -239,16 +239,110 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
 
             {/* Widget Tab */}
             {activeTab === "widget" && (
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
-                    <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Widget Builder</h2>
-                    <p className="text-slate-500 mb-6">Customize the appearance of your chat widget.</p>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Customization Panel */}
+                    <div className="space-y-6">
+                        {/* Colors */}
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
+                            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Colors</h3>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                        Primary Color
+                                    </label>
+                                    <div className="flex items-center gap-2">
+                                        <input type="color" defaultValue="#7C3AED" className="w-10 h-10 rounded cursor-pointer" />
+                                        <input type="text" defaultValue="#7C3AED" className="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                        Background
+                                    </label>
+                                    <div className="flex items-center gap-2">
+                                        <input type="color" defaultValue="#FFFFFF" className="w-10 h-10 rounded cursor-pointer" />
+                                        <input type="text" defaultValue="#FFFFFF" className="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                    <Link
-                        href="/dashboard/widget-builder"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg font-medium"
-                    >
-                        Open Widget Builder
-                    </Link>
+                        {/* Branding */}
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
+                            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Branding</h3>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                        Bot Name
+                                    </label>
+                                    <input type="text" defaultValue={agent.name} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                        Welcome Message
+                                    </label>
+                                    <input type="text" defaultValue="Hi! How can I help you today?" className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Position */}
+                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
+                            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Position</h3>
+                            <div className="flex gap-3">
+                                <button className="flex-1 px-4 py-3 rounded-xl border-2 border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 font-medium">
+                                    Bottom Right
+                                </button>
+                                <button className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-medium hover:border-slate-300">
+                                    Bottom Left
+                                </button>
+                            </div>
+                        </div>
+
+                        <button className="w-full px-4 py-3 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700">
+                            Save Changes
+                        </button>
+                    </div>
+
+                    {/* Live Preview */}
+                    <div className="bg-slate-100 dark:bg-slate-900 rounded-2xl p-6 flex items-end justify-end min-h-[500px] relative">
+                        <div className="absolute top-4 left-4 text-sm font-medium text-slate-500">Live Preview</div>
+
+                        {/* Chat Widget Preview */}
+                        <div className="w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden">
+                            {/* Header */}
+                            <div className="bg-primary-600 text-white p-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                                        🤖
+                                    </div>
+                                    <div>
+                                        <p className="font-medium">{agent.name}</p>
+                                        <p className="text-sm text-white/70">Online</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Messages */}
+                            <div className="p-4 h-48 bg-slate-50 dark:bg-slate-900">
+                                <div className="bg-white dark:bg-slate-700 rounded-2xl rounded-tl-none p-3 text-sm max-w-[80%]">
+                                    Hi! How can I help you today?
+                                </div>
+                            </div>
+
+                            {/* Input */}
+                            <div className="p-3 border-t border-slate-200 dark:border-slate-700">
+                                <div className="flex items-center gap-2">
+                                    <input type="text" placeholder="Type a message..." className="flex-1 px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-sm" disabled />
+                                    <button className="p-2 bg-primary-600 text-white rounded-lg">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
 
