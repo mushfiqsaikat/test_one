@@ -161,51 +161,53 @@ export default function AgentsPage() {
                             key={agent.id}
                             className="group relative bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg transition-shadow"
                         >
-                            {/* Gradient Preview */}
-                            <div className={`h-40 bg-gradient-to-br ${getRandomGradient(index)} relative`}>
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="w-32 h-20 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-6 h-6 rounded-full bg-white/40"></div>
-                                            <span className="text-white font-medium text-sm">{agent.name}</span>
+                            {/* Full Card Link */}
+                            <Link
+                                href={`/dashboard/agents/${agent.id}`}
+                                className="block"
+                            >
+                                {/* Gradient Preview */}
+                                <div className={`h-40 bg-gradient-to-br ${getRandomGradient(index)} relative`}>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="w-32 h-20 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-6 h-6 rounded-full bg-white/40"></div>
+                                                <span className="text-white font-medium text-sm">{agent.name}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="absolute top-3 left-3 flex items-center gap-2 text-white text-sm">
-                                    <div className="w-5 h-5 rounded bg-white/30 flex items-center justify-center">
-                                        🤖
+                                    <div className="absolute top-3 left-3 flex items-center gap-2 text-white text-sm">
+                                        <div className="w-5 h-5 rounded bg-white/30 flex items-center justify-center">
+                                            🤖
+                                        </div>
+                                        <span className="font-medium">{agent.name}</span>
                                     </div>
-                                    <span className="font-medium">{agent.name}</span>
                                 </div>
-                            </div>
 
-                            {/* Info */}
-                            <div className="p-4 flex items-center justify-between">
-                                <div>
-                                    <Link
-                                        href={`/dashboard/agents/${agent.id}`}
-                                        className="font-semibold text-slate-800 dark:text-white hover:text-primary-600 dark:hover:text-primary-400"
-                                    >
+                                {/* Info */}
+                                <div className="p-4">
+                                    <p className="font-semibold text-slate-800 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400">
                                         {agent.name}
-                                    </Link>
+                                    </p>
                                     <p className="text-sm text-slate-500">
                                         Last trained {new Date(agent.updated_at).toLocaleDateString()}
                                     </p>
                                 </div>
+                            </Link>
 
-                                {/* Menu */}
-                                <div className="relative">
-                                    <button
-                                        onClick={() => deleteAgent(agent.id)}
-                                        className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-red-500 transition-colors"
-                                        title="Delete agent"
-                                    >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
+                            {/* Delete Button - Outside Link to prevent navigation */}
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteAgent(agent.id);
+                                }}
+                                className="absolute top-3 right-3 p-2 rounded-lg bg-black/20 hover:bg-red-500 text-white transition-colors opacity-0 group-hover:opacity-100"
+                                title="Delete agent"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
                         </div>
                     ))}
                 </div>
