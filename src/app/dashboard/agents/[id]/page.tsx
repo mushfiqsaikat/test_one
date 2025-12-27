@@ -311,6 +311,228 @@ function WidgetBuilder({ agentId, agentName }: { agentId: string; agentName: str
     );
 }
 
+// Settings Panel Component with Sub-tabs
+function SettingsPanel({ agent, agentId }: { agent: Agent; agentId: string }) {
+    const [settingsTab, setSettingsTab] = useState<"general" | "model" | "deploy">("general");
+    const [modelSettings, setModelSettings] = useState({
+        provider: "openai",
+        model: "gpt-4o-mini",
+        customApiKey: "",
+        customApiUrl: "",
+        systemPrompt: agent.system_prompt || "You are a helpful AI assistant.",
+        temperature: 0.7,
+    });
+
+    const llmProviders = [
+        { id: "openai", name: "OpenAI", models: ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"] },
+        { id: "anthropic", name: "Anthropic", models: ["claude-3-opus", "claude-3-sonnet", "claude-3-haiku"] },
+        { id: "google", name: "Google AI", models: ["gemini-1.5-pro", "gemini-1.5-flash", "gemini-2.0-flash"] },
+        { id: "custom", name: "Custom API", models: [] },
+    ];
+
+    const settingsTabs = [
+        { id: "general", label: "General", icon: "⚙️" },
+        { id: "model", label: "Model", icon: "🤖" },
+        { id: "deploy", label: "Deploy", icon: "🚀" },
+    ];
+
+    const selectedProvider = llmProviders.find(p => p.id === modelSettings.provider);
+
+    return (
+        <div className="space-y-6">
+            {/* Sub-tabs */}
+            <div className="flex gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl w-fit">
+                {settingsTabs.map((tab) => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setSettingsTab(tab.id as typeof settingsTab)}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all ${settingsTab === tab.id
+                            ? "bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm"
+                            : "text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white"
+                            }`}
+                    >
+                        <span>{tab.icon}</span>
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
+
+            {/* General Tab */}
+            {settingsTab === "general" && (
+                <div className="space-y-6">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
+                        <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Agent Settings</h2>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                    Agent Name
+                                </label>
+                                <input
+                                    type="text"
+                                    defaultValue={agent.name}
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                                />
+                            </div>
+                            <button className="px-4 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700">
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-red-200 dark:border-red-800 p-6">
+                        <h2 className="text-lg font-semibold text-red-600 mb-4">Danger Zone</h2>
+                        <p className="text-slate-500 mb-4">Once you delete this agent, there is no going back.</p>
+                        <button className="px-4 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600">
+                            Delete Agent
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Model Tab */}
+            {settingsTab === "model" && (
+                <div className="space-y-6">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
+                        <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">AI Model Configuration</h2>
+
+                        <div className="space-y-6">
+                            {/* Provider Selection */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+                                    LLM Provider
+                                </label>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                    {llmProviders.map((provider) => (
+                                        <button
+                                            key={provider.id}
+                                            onClick={() => setModelSettings({ ...modelSettings, provider: provider.id, model: provider.models[0] || "" })}
+                                            className={`p-4 rounded-xl border-2 text-left transition-all ${modelSettings.provider === provider.id
+                                                ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
+                                                : "border-slate-200 dark:border-slate-700 hover:border-slate-300"
+                                                }`}
+                                        >
+                                            <p className="font-medium text-slate-800 dark:text-white">{provider.name}</p>
+                                            <p className="text-xs text-slate-500 mt-1">
+                                                {provider.id === "custom" ? "Your own API" : `${provider.models.length} models`}
+                                            </p>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Model Selection */}
+                            {modelSettings.provider !== "custom" && selectedProvider && (
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                        Model
+                                    </label>
+                                    <select
+                                        value={modelSettings.model}
+                                        onChange={(e) => setModelSettings({ ...modelSettings, model: e.target.value })}
+                                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                                    >
+                                        {selectedProvider.models.map((model) => (
+                                            <option key={model} value={model}>{model}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            {/* Custom API Settings */}
+                            {modelSettings.provider === "custom" && (
+                                <>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                            API Endpoint URL
+                                        </label>
+                                        <input
+                                            type="text"
+                                            placeholder="https://api.example.com/v1/chat/completions"
+                                            value={modelSettings.customApiUrl}
+                                            onChange={(e) => setModelSettings({ ...modelSettings, customApiUrl: e.target.value })}
+                                            className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                            API Key
+                                        </label>
+                                        <input
+                                            type="password"
+                                            placeholder="sk-..."
+                                            value={modelSettings.customApiKey}
+                                            onChange={(e) => setModelSettings({ ...modelSettings, customApiKey: e.target.value })}
+                                            className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                                        />
+                                    </div>
+                                </>
+                            )}
+
+                            {/* System Prompt */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                    System Prompt
+                                </label>
+                                <textarea
+                                    rows={4}
+                                    value={modelSettings.systemPrompt}
+                                    onChange={(e) => setModelSettings({ ...modelSettings, systemPrompt: e.target.value })}
+                                    placeholder="You are a helpful AI assistant..."
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                                />
+                            </div>
+
+                            {/* Temperature */}
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                    Temperature: {modelSettings.temperature}
+                                </label>
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="2"
+                                    step="0.1"
+                                    value={modelSettings.temperature}
+                                    onChange={(e) => setModelSettings({ ...modelSettings, temperature: parseFloat(e.target.value) })}
+                                    className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                                />
+                                <div className="flex justify-between text-xs text-slate-500 mt-1">
+                                    <span>More Focused (0)</span>
+                                    <span>More Creative (2)</span>
+                                </div>
+                            </div>
+
+                            <button className="px-4 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700">
+                                Save Model Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Deploy Tab */}
+            {settingsTab === "deploy" && (
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
+                    <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">Embed on Your Website</h2>
+                    <p className="text-slate-500 mb-6">Add this code snippet to your website to embed the chatbot.</p>
+
+                    <div className="bg-slate-900 rounded-xl p-4 mb-4">
+                        <pre className="text-green-400 text-sm overflow-x-auto">
+                            {`<script src="${typeof window !== "undefined" ? window.location.origin : ""}/widget.js"
+  data-chatbot-id="${agentId}">
+</script>`}
+                        </pre>
+                    </div>
+
+                    <button className="px-4 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700">
+                        Copy Code
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+}
+
 export default function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
     const searchParams = useSearchParams();
@@ -536,51 +758,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
 
             {/* Settings Tab */}
             {activeTab === "settings" && (
-                <div className="space-y-6">
-                    {/* Agent Name */}
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
-                        <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Agent Settings</h2>
-
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                    Agent Name
-                                </label>
-                                <input
-                                    type="text"
-                                    defaultValue={agent.name}
-                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                    System Prompt
-                                </label>
-                                <textarea
-                                    rows={4}
-                                    defaultValue={agent.system_prompt || "You are a helpful AI assistant."}
-                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
-                                />
-                            </div>
-
-                            <button className="px-4 py-2 bg-primary-600 text-white rounded-lg font-medium">
-                                Save Changes
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Danger Zone */}
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-red-200 dark:border-red-800 p-6">
-                        <h2 className="text-lg font-semibold text-red-600 mb-4">Danger Zone</h2>
-                        <p className="text-slate-500 mb-4">
-                            Once you delete this agent, there is no going back.
-                        </p>
-                        <button className="px-4 py-2 bg-red-500 text-white rounded-lg font-medium">
-                            Delete Agent
-                        </button>
-                    </div>
-                </div>
+                <SettingsPanel agent={agent} agentId={id} />
             )}
         </div>
     );
