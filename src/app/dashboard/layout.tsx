@@ -174,9 +174,9 @@ export default function DashboardLayout({
     );
 
     return (
-        <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col">
-            {/* Top Header Bar */}
-            <header className="h-12 border-b border-slate-200 dark:border-slate-700 flex items-center px-4 bg-white dark:bg-slate-900 z-50">
+        <div className="h-screen bg-white dark:bg-slate-900 flex flex-col overflow-hidden">
+            {/* Top Header Bar - Fixed */}
+            <header className="h-12 border-b border-slate-200 dark:border-slate-700 flex items-center px-4 bg-white dark:bg-slate-900 z-50 shrink-0">
                 {/* Logo */}
                 <Link href="/dashboard/agents" className="flex items-center gap-2 mr-4">
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs">
@@ -389,9 +389,9 @@ export default function DashboardLayout({
             </header>
 
             {/* Main Layout with Sidebar */}
-            <div className="flex-1 flex">
-                {/* Sidebar */}
-                <aside className="w-64 border-r border-slate-200 dark:border-slate-700 flex flex-col bg-white dark:bg-slate-900">
+            <div className="flex-1 flex overflow-hidden">
+                {/* Sidebar - Fixed */}
+                <aside className="w-64 border-r border-slate-200 dark:border-slate-700 flex flex-col bg-white dark:bg-slate-900 shrink-0 overflow-y-auto">
 
                     {/* Navigation */}
                     <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
@@ -521,8 +521,8 @@ export default function DashboardLayout({
                     </div>
                 </aside>
 
-                {/* Main Content */}
-                <main className="flex-1 overflow-auto">
+                {/* Main Content - Scrollable */}
+                <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-900">
                     <div className="p-8">
                         {children}
                     </div>
