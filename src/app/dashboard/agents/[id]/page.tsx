@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, use } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface Agent {
     id: string;
@@ -21,9 +21,10 @@ interface Message {
 
 export default function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
+    const searchParams = useSearchParams();
+    const activeTab = searchParams.get("tab") || "playground";
     const [agent, setAgent] = useState<Agent | null>(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState("playground");
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [sending, setSending] = useState(false);
@@ -85,13 +86,6 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
         }
     };
 
-    const tabs = [
-        { id: "playground", label: "Playground", icon: "💬" },
-        { id: "sources", label: "Sources", icon: "📚" },
-        { id: "deploy", label: "Deploy", icon: "🚀" },
-        { id: "settings", label: "Settings", icon: "⚙️" },
-    ];
-
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
@@ -106,42 +100,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
 
     return (
         <div className="max-w-6xl">
-            {/* Header */}
-            <div className="flex items-center gap-4 mb-6">
-                <Link
-                    href="/dashboard/agents"
-                    className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500"
-                >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                </Link>
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-800 dark:text-white">{agent.name}</h1>
-                    <p className="text-sm text-slate-500">
-                        Created {new Date(agent.created_at).toLocaleDateString()}
-                    </p>
-                </div>
-            </div>
-
-            {/* Tabs */}
-            <div className="flex gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl mb-6 w-fit">
-                {tabs.map((tab) => (
-                    <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all ${activeTab === tab.id
-                                ? "bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm"
-                                : "text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white"
-                            }`}
-                    >
-                        <span>{tab.icon}</span>
-                        {tab.label}
-                    </button>
-                ))}
-            </div>
-
-            {/* Tab Content */}
+            {/* Playground Tab */}
             {activeTab === "playground" && (
                 <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 h-[600px] flex flex-col">
                     {/* Messages */}
@@ -204,42 +163,141 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                 </div>
             )}
 
+            {/* Activity Tab */}
+            {activeTab === "activity" && (
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
+                    <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Activity</h2>
+                    <p className="text-slate-500">View conversation history and analytics for this agent.</p>
+                    <div className="mt-6 text-center py-12 text-slate-400">
+                        <span className="text-4xl block mb-4">📊</span>
+                        <p>No activity yet</p>
+                    </div>
+                </div>
+            )}
+
+            {/* Sources Tab */}
             {activeTab === "sources" && (
                 <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
                     <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Knowledge Sources</h2>
                     <p className="text-slate-500 mb-6">Add data sources to train your agent.</p>
-                    <Link
-                        href="/dashboard/sources"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg font-medium"
-                    >
-                        Manage Sources
-                    </Link>
+                    <div className="grid grid-cols-3 gap-4">
+                        <div className="p-4 border border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-center hover:border-primary-500 cursor-pointer transition-colors">
+                            <span className="text-2xl block mb-2">📝</span>
+                            <p className="font-medium text-slate-800 dark:text-white">Text</p>
+                        </div>
+                        <div className="p-4 border border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-center hover:border-primary-500 cursor-pointer transition-colors">
+                            <span className="text-2xl block mb-2">📄</span>
+                            <p className="font-medium text-slate-800 dark:text-white">Files</p>
+                        </div>
+                        <div className="p-4 border border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-center hover:border-primary-500 cursor-pointer transition-colors">
+                            <span className="text-2xl block mb-2">🌐</span>
+                            <p className="font-medium text-slate-800 dark:text-white">Website</p>
+                        </div>
+                    </div>
                 </div>
             )}
 
+            {/* Actions Tab */}
+            {activeTab === "actions" && (
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
+                    <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">AI Actions</h2>
+                    <p className="text-slate-500 mb-6">Configure actions your agent can perform.</p>
+                    <div className="text-center py-12 text-slate-400">
+                        <span className="text-4xl block mb-4">⚡</span>
+                        <p>No actions configured</p>
+                        <button className="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg font-medium">
+                            Add Action
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Deploy Tab */}
             {activeTab === "deploy" && (
                 <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
                     <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Deploy Your Agent</h2>
                     <p className="text-slate-500 mb-6">Get the embed code to add this agent to your website.</p>
+
+                    <div className="space-y-4">
+                        <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                Embed Code
+                            </label>
+                            <pre className="text-sm text-slate-600 dark:text-slate-400 overflow-x-auto">
+                                {`<script src="${typeof window !== 'undefined' ? window.location.origin : ''}/widget.js" 
+  data-chatbot-id="${id}">
+</script>`}
+                            </pre>
+                        </div>
+
+                        <button className="px-4 py-2 bg-primary-600 text-white rounded-lg font-medium">
+                            Copy Code
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Widget Tab */}
+            {activeTab === "widget" && (
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
+                    <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Widget Builder</h2>
+                    <p className="text-slate-500 mb-6">Customize the appearance of your chat widget.</p>
+
                     <Link
-                        href="/dashboard/deploy"
+                        href="/dashboard/widget-builder"
                         className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg font-medium"
                     >
-                        View Embed Code
+                        Open Widget Builder
                     </Link>
                 </div>
             )}
 
+            {/* Settings Tab */}
             {activeTab === "settings" && (
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
-                    <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Agent Settings</h2>
-                    <p className="text-slate-500 mb-6">Configure your agent&apos;s behavior and appearance.</p>
-                    <Link
-                        href="/dashboard/settings"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg font-medium"
-                    >
-                        Open Settings
-                    </Link>
+                <div className="space-y-6">
+                    {/* Agent Name */}
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
+                        <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Agent Settings</h2>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                    Agent Name
+                                </label>
+                                <input
+                                    type="text"
+                                    defaultValue={agent.name}
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                    System Prompt
+                                </label>
+                                <textarea
+                                    rows={4}
+                                    defaultValue={agent.system_prompt || "You are a helpful AI assistant."}
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"
+                                />
+                            </div>
+
+                            <button className="px-4 py-2 bg-primary-600 text-white rounded-lg font-medium">
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Danger Zone */}
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-red-200 dark:border-red-800 p-6">
+                        <h2 className="text-lg font-semibold text-red-600 mb-4">Danger Zone</h2>
+                        <p className="text-slate-500 mb-4">
+                            Once you delete this agent, there is no going back.
+                        </p>
+                        <button className="px-4 py-2 bg-red-500 text-white rounded-lg font-medium">
+                            Delete Agent
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
