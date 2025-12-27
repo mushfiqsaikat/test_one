@@ -1,0 +1,182 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 250 250 255;
+        --foreground: 15 23 42;
+    }
+
+    .dark {
+        --background: 10 10 15;
+        --foreground: 248 250 252;
+    }
+}
+
+@layer base {
+    body {
+        @apply bg-slate-50 text-slate-900 dark:bg-[#0a0a0f] dark:text-slate-100;
+        font-feature-settings: "rlig" 1, "calt" 1;
+    }
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+}
+
+/* Custom gradient backgrounds */
+.gradient-bg {
+    background: linear-gradient(135deg,
+            rgba(124, 58, 237, 0.1) 0%,
+            rgba(168, 85, 247, 0.05) 50%,
+            rgba(192, 132, 252, 0.1) 100%);
+}
+
+.dark .gradient-bg {
+    background: linear-gradient(135deg,
+            rgba(124, 58, 237, 0.15) 0%,
+            rgba(168, 85, 247, 0.08) 50%,
+            rgba(192, 132, 252, 0.12) 100%);
+}
+
+/* Hero gradient background */
+.hero-gradient {
+    background: linear-gradient(180deg,
+            rgba(237, 233, 254, 0.8) 0%,
+            rgba(250, 245, 255, 0.4) 50%,
+            rgba(255, 255, 255, 0) 100%);
+}
+
+.dark .hero-gradient {
+    background: linear-gradient(180deg,
+            rgba(124, 58, 237, 0.15) 0%,
+            rgba(88, 28, 135, 0.08) 50%,
+            rgba(10, 10, 15, 0) 100%);
+}
+
+/* Glassmorphism */
+.glass {
+    @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50;
+}
+
+/* Animated gradient orbs */
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.4;
+    animation: float 20s infinite ease-in-out;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    25% {
+        transform: translate(30px, -30px) scale(1.05);
+    }
+
+    50% {
+        transform: translate(-20px, 20px) scale(0.95);
+    }
+
+    75% {
+        transform: translate(20px, 30px) scale(1.02);
+    }
+}
+
+/* Button hover effects */
+.btn-primary {
+    @apply bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/30 hover:-translate-y-0.5;
+}
+
+.btn-secondary {
+    @apply bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold py-3 px-6 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary-300 dark:hover:border-primary-600 transition-all duration-300 hover:-translate-y-0.5;
+}
+
+/* Card styles */
+.card {
+    @apply bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 p-6 transition-all duration-300;
+}
+
+.card-hover {
+    @apply hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-lg hover:shadow-primary-500/10 hover:-translate-y-1;
+}
+
+/* Input styles */
+.input {
+    @apply w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all duration-300;
+}
+
+/* Chat message animations */
+.message-in {
+    animation: messageSlide 0.3s ease-out;
+}
+
+@keyframes messageSlide {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Typing indicator */
+.typing-dot {
+    animation: typingBounce 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typingBounce {
+
+    0%,
+    60%,
+    100% {
+        transform: translateY(0);
+    }
+
+    30% {
+        transform: translateY(-6px);
+    }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 dark:bg-slate-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400 dark:bg-slate-600;
+}
