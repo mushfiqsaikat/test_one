@@ -127,39 +127,12 @@ export default function DashboardLayout({
     // Agent-specific navigation with modern SVG icons
     const agentNavItems = agentId ? [
         {
-            name: "Playground",
-            href: `/dashboard/agents/${agentId}?tab=playground`,
-            icon: (
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-                </svg>
-            ),
-        },
-        {
-            name: "Activity",
-            href: `/dashboard/agents/${agentId}?tab=activity`,
-            icon: (
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                </svg>
-            ),
-        },
-        {
             name: "Sources",
             href: `/dashboard/agents/${agentId}?tab=sources`,
             icon: (
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
-                </svg>
-            ),
-        },
-        {
-            name: "Actions",
-            href: `/dashboard/agents/${agentId}?tab=actions`,
-            icon: (
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
                 </svg>
             ),
         },
@@ -372,34 +345,11 @@ export default function DashboardLayout({
                     <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
                         {isViewingAgent && currentAgent ? (
                             <>
-                                {/* Back to Agents */}
-                                <Link
-                                    href="/dashboard/agents"
-                                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors mb-4"
-                                >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                    </svg>
-                                    Back to Agents
-                                </Link>
-
-                                {/* Agent Name */}
-                                <div className="px-3 py-2 mb-2">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white text-sm">
-                                            🤖
-                                        </div>
-                                        <span className="font-semibold text-slate-800 dark:text-white truncate">
-                                            {currentAgent.name}
-                                        </span>
-                                    </div>
-                                </div>
-
                                 {/* Agent Navigation */}
                                 {agentNavItems.map((item) => {
                                     const tab = new URL(item.href, "http://localhost").searchParams.get("tab");
                                     const currentTab = new URL(pathname + (typeof window !== "undefined" ? window.location.search : ""), "http://localhost").searchParams.get("tab");
-                                    const isActive = tab === currentTab || (!currentTab && tab === "playground");
+                                    const isActive = tab === currentTab || (!currentTab && tab === "sources");
                                     return (
                                         <Link
                                             key={item.name}

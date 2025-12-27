@@ -80,8 +80,8 @@ function WidgetBuilder({ agentId, agentName }: { agentId: string; agentName: str
                             key={tab.id}
                             onClick={() => setWidgetTab(tab.id as typeof widgetTab)}
                             className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all ${widgetTab === tab.id
-                                    ? "bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm"
-                                    : "text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white"
+                                ? "bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm"
+                                : "text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white"
                                 }`}
                         >
                             <span>{tab.icon}</span>
@@ -103,8 +103,8 @@ function WidgetBuilder({ agentId, agentName }: { agentId: string; agentName: str
                                             key={theme.id}
                                             onClick={() => applyTheme(theme.id)}
                                             className={`p-3 rounded-xl border-2 transition-all text-left ${settings.themePreset === theme.id
-                                                    ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-                                                    : "border-slate-200 dark:border-slate-700 hover:border-slate-300"
+                                                ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
+                                                : "border-slate-200 dark:border-slate-700 hover:border-slate-300"
                                                 }`}
                                         >
                                             <div className="flex gap-1 mb-2">
@@ -158,8 +158,8 @@ function WidgetBuilder({ agentId, agentName }: { agentId: string; agentName: str
                                             key={pos}
                                             onClick={() => setSettings({ ...settings, position: pos })}
                                             className={`flex-1 px-4 py-3 rounded-xl border-2 font-medium transition-all ${settings.position === pos
-                                                    ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-600"
-                                                    : "border-slate-200 dark:border-slate-700 text-slate-600"
+                                                ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-600"
+                                                : "border-slate-200 dark:border-slate-700 text-slate-600"
                                                 }`}
                                         >
                                             {pos === "bottom-right" ? "↘️ Bottom Right" : "↙️ Bottom Left"}
@@ -314,7 +314,7 @@ function WidgetBuilder({ agentId, agentName }: { agentId: string; agentName: str
 export default function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
     const searchParams = useSearchParams();
-    const activeTab = searchParams.get("tab") || "playground";
+    const activeTab = searchParams.get("tab") || "sources";
     const [agent, setAgent] = useState<Agent | null>(null);
     const [loading, setLoading] = useState(true);
     const [messages, setMessages] = useState<Message[]>([]);
