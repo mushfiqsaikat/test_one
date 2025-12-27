@@ -19,6 +19,298 @@ interface Message {
     content: string;
 }
 
+// Theme presets
+const themePresets = [
+    { id: "default", name: "Purple", colors: { primary: "#7c3aed", background: "#ffffff", userBubble: "#7c3aed", botBubble: "#f1f5f9" } },
+    { id: "dark", name: "Dark", colors: { primary: "#8b5cf6", background: "#1e1e2e", userBubble: "#8b5cf6", botBubble: "#2a2a3e" } },
+    { id: "ocean", name: "Ocean", colors: { primary: "#0ea5e9", background: "#f0f9ff", userBubble: "#0ea5e9", botBubble: "#e0f2fe" } },
+    { id: "forest", name: "Forest", colors: { primary: "#10b981", background: "#f0fdf4", userBubble: "#10b981", botBubble: "#dcfce7" } },
+    { id: "sunset", name: "Sunset", colors: { primary: "#f97316", background: "#fffbeb", userBubble: "#f97316", botBubble: "#fed7aa" } },
+    { id: "rose", name: "Rose", colors: { primary: "#ec4899", background: "#fdf2f8", userBubble: "#ec4899", botBubble: "#fce7f3" } },
+];
+
+function WidgetBuilder({ agentId, agentName }: { agentId: string; agentName: string }) {
+    const [widgetTab, setWidgetTab] = useState<"appearance" | "branding" | "behavior" | "advanced">("appearance");
+    const [settings, setSettings] = useState({
+        primaryColor: "#7c3aed",
+        backgroundColor: "#ffffff",
+        userBubbleColor: "#7c3aed",
+        botBubbleColor: "#f1f5f9",
+        themePreset: "default",
+        position: "bottom-right" as "bottom-right" | "bottom-left",
+        bubbleSize: "medium" as "small" | "medium" | "large",
+        botName: agentName,
+        welcomeMessage: "Hi there! 👋 How can I help you today?",
+        placeholderText: "Type your message...",
+        showBranding: true,
+        autoOpen: false,
+        autoOpenDelay: 3,
+        showTypingIndicator: true,
+    });
+
+    const applyTheme = (themeId: string) => {
+        const theme = themePresets.find((t) => t.id === themeId);
+        if (theme) {
+            setSettings({
+                ...settings,
+                themePreset: themeId,
+                primaryColor: theme.colors.primary,
+                backgroundColor: theme.colors.background,
+                userBubbleColor: theme.colors.userBubble,
+                botBubbleColor: theme.colors.botBubble,
+            });
+        }
+    };
+
+    const widgetTabs = [
+        { id: "appearance", label: "Appearance", icon: "🎨" },
+        { id: "branding", label: "Branding", icon: "✨" },
+        { id: "behavior", label: "Behavior", icon: "⚡" },
+        { id: "advanced", label: "Advanced", icon: "🔧" },
+    ];
+
+    return (
+        <div className="flex gap-6">
+            {/* Settings Panel */}
+            <div className="flex-1 min-w-0">
+                {/* Tabs */}
+                <div className="flex gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl mb-6">
+                    {widgetTabs.map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setWidgetTab(tab.id as typeof widgetTab)}
+                            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all ${widgetTab === tab.id
+                                    ? "bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm"
+                                    : "text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white"
+                                }`}
+                        >
+                            <span>{tab.icon}</span>
+                            <span className="hidden sm:inline">{tab.label}</span>
+                        </button>
+                    ))}
+                </div>
+
+                {/* Tab Content */}
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
+                    {widgetTab === "appearance" && (
+                        <div className="space-y-6">
+                            {/* Theme Presets */}
+                            <div>
+                                <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Theme Presets</h3>
+                                <div className="grid grid-cols-3 gap-3">
+                                    {themePresets.map((theme) => (
+                                        <button
+                                            key={theme.id}
+                                            onClick={() => applyTheme(theme.id)}
+                                            className={`p-3 rounded-xl border-2 transition-all text-left ${settings.themePreset === theme.id
+                                                    ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
+                                                    : "border-slate-200 dark:border-slate-700 hover:border-slate-300"
+                                                }`}
+                                        >
+                                            <div className="flex gap-1 mb-2">
+                                                {Object.values(theme.colors).map((color, i) => (
+                                                    <div key={i} className="w-4 h-4 rounded-full border border-white shadow-sm" style={{ backgroundColor: color }} />
+                                                ))}
+                                            </div>
+                                            <p className="text-xs font-medium text-slate-700 dark:text-slate-300">{theme.name}</p>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Custom Colors */}
+                            <div>
+                                <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Custom Colors</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {[
+                                        { key: "primaryColor", label: "Primary" },
+                                        { key: "backgroundColor", label: "Background" },
+                                        { key: "userBubbleColor", label: "User Bubble" },
+                                        { key: "botBubbleColor", label: "Bot Bubble" },
+                                    ].map(({ key, label }) => (
+                                        <div key={key}>
+                                            <label className="block text-xs text-slate-500 mb-1">{label}</label>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="color"
+                                                    value={settings[key as keyof typeof settings] as string}
+                                                    onChange={(e) => setSettings({ ...settings, [key]: e.target.value, themePreset: "custom" })}
+                                                    className="w-10 h-10 rounded-lg cursor-pointer border border-slate-200"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={settings[key as keyof typeof settings] as string}
+                                                    onChange={(e) => setSettings({ ...settings, [key]: e.target.value, themePreset: "custom" })}
+                                                    className="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 font-mono text-sm"
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Position */}
+                            <div>
+                                <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Position</h3>
+                                <div className="flex gap-3">
+                                    {(["bottom-right", "bottom-left"] as const).map((pos) => (
+                                        <button
+                                            key={pos}
+                                            onClick={() => setSettings({ ...settings, position: pos })}
+                                            className={`flex-1 px-4 py-3 rounded-xl border-2 font-medium transition-all ${settings.position === pos
+                                                    ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-600"
+                                                    : "border-slate-200 dark:border-slate-700 text-slate-600"
+                                                }`}
+                                        >
+                                            {pos === "bottom-right" ? "↘️ Bottom Right" : "↙️ Bottom Left"}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {widgetTab === "branding" && (
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Bot Name</label>
+                                <input
+                                    type="text"
+                                    value={settings.botName}
+                                    onChange={(e) => setSettings({ ...settings, botName: e.target.value })}
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Welcome Message</label>
+                                <textarea
+                                    value={settings.welcomeMessage}
+                                    onChange={(e) => setSettings({ ...settings, welcomeMessage: e.target.value })}
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 min-h-[100px]"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Input Placeholder</label>
+                                <input
+                                    type="text"
+                                    value={settings.placeholderText}
+                                    onChange={(e) => setSettings({ ...settings, placeholderText: e.target.value })}
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+                                />
+                            </div>
+                            <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-900">
+                                <div>
+                                    <p className="font-medium text-slate-800 dark:text-white">Show Branding</p>
+                                    <p className="text-sm text-slate-500">Display &quot;Powered by AutoMax AI&quot;</p>
+                                </div>
+                                <button
+                                    onClick={() => setSettings({ ...settings, showBranding: !settings.showBranding })}
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.showBranding ? "bg-primary-600" : "bg-slate-300"}`}
+                                >
+                                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.showBranding ? "translate-x-6" : "translate-x-1"}`} />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {widgetTab === "behavior" && (
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-900">
+                                <div>
+                                    <p className="font-medium text-slate-800 dark:text-white">Auto-Open Chat</p>
+                                    <p className="text-sm text-slate-500">Automatically open after a delay</p>
+                                </div>
+                                <button
+                                    onClick={() => setSettings({ ...settings, autoOpen: !settings.autoOpen })}
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.autoOpen ? "bg-primary-600" : "bg-slate-300"}`}
+                                >
+                                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.autoOpen ? "translate-x-6" : "translate-x-1"}`} />
+                                </button>
+                            </div>
+                            <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-900">
+                                <div>
+                                    <p className="font-medium text-slate-800 dark:text-white">Typing Indicator</p>
+                                    <p className="text-sm text-slate-500">Show animation while bot responds</p>
+                                </div>
+                                <button
+                                    onClick={() => setSettings({ ...settings, showTypingIndicator: !settings.showTypingIndicator })}
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.showTypingIndicator ? "bg-primary-600" : "bg-slate-300"}`}
+                                >
+                                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.showTypingIndicator ? "translate-x-6" : "translate-x-1"}`} />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {widgetTab === "advanced" && (
+                        <div className="space-y-4">
+                            <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+                                <h3 className="font-medium text-amber-800 dark:text-amber-200 flex items-center gap-2">
+                                    ⚠️ Domain Whitelist (Pro Feature)
+                                </h3>
+                                <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                                    Restrict which domains can embed your chatbot. Available on Pro plans.
+                                </p>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Custom CSS</label>
+                                <textarea
+                                    placeholder="/* Add custom styles */"
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 font-mono text-sm min-h-[150px]"
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    <button className="w-full mt-6 px-4 py-3 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700">
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+
+            {/* Live Preview */}
+            <div className="w-[380px] flex-shrink-0">
+                <div className="sticky top-0">
+                    <h3 className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-4">Live Preview</h3>
+                    <div className="bg-slate-100 dark:bg-slate-900 rounded-2xl p-4 min-h-[500px] relative flex items-end" style={{ justifyContent: settings.position === "bottom-right" ? "flex-end" : "flex-start" }}>
+                        {/* Chat Widget */}
+                        <div className="w-full max-w-[320px] rounded-2xl shadow-xl overflow-hidden" style={{ backgroundColor: settings.backgroundColor }}>
+                            <div className="p-4 flex items-center gap-3" style={{ backgroundColor: settings.primaryColor }}>
+                                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white">🤖</div>
+                                <div>
+                                    <p className="font-semibold text-white">{settings.botName}</p>
+                                    <p className="text-xs text-white/70">Online</p>
+                                </div>
+                            </div>
+                            <div className="p-4 space-y-3 h-48">
+                                <div className="rounded-2xl rounded-bl-md px-4 py-2 max-w-[80%]" style={{ backgroundColor: settings.botBubbleColor }}>
+                                    <p className="text-sm">{settings.welcomeMessage}</p>
+                                </div>
+                                <div className="flex justify-end">
+                                    <div className="rounded-2xl rounded-br-md px-4 py-2 text-white max-w-[80%]" style={{ backgroundColor: settings.userBubbleColor }}>
+                                        <p className="text-sm">Hi! I have a question</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="p-3 border-t" style={{ borderColor: settings.botBubbleColor }}>
+                                <div className="flex gap-2">
+                                    <input type="text" placeholder={settings.placeholderText} className="flex-1 px-4 py-2 rounded-full border text-sm" style={{ borderColor: settings.botBubbleColor }} disabled />
+                                    <button className="w-10 h-10 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: settings.primaryColor }}>
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                {settings.showBranding && <p className="text-center text-xs text-slate-400 mt-2">Powered by AutoMax AI</p>}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
     const searchParams = useSearchParams();
@@ -239,111 +531,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
 
             {/* Widget Tab */}
             {activeTab === "widget" && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Customization Panel */}
-                    <div className="space-y-6">
-                        {/* Colors */}
-                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
-                            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Colors</h3>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                        Primary Color
-                                    </label>
-                                    <div className="flex items-center gap-2">
-                                        <input type="color" defaultValue="#7C3AED" className="w-10 h-10 rounded cursor-pointer" />
-                                        <input type="text" defaultValue="#7C3AED" className="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                        Background
-                                    </label>
-                                    <div className="flex items-center gap-2">
-                                        <input type="color" defaultValue="#FFFFFF" className="w-10 h-10 rounded cursor-pointer" />
-                                        <input type="text" defaultValue="#FFFFFF" className="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Branding */}
-                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
-                            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Branding</h3>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                        Bot Name
-                                    </label>
-                                    <input type="text" defaultValue={agent.name} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                        Welcome Message
-                                    </label>
-                                    <input type="text" defaultValue="Hi! How can I help you today?" className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900" />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Position */}
-                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
-                            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Position</h3>
-                            <div className="flex gap-3">
-                                <button className="flex-1 px-4 py-3 rounded-xl border-2 border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 font-medium">
-                                    Bottom Right
-                                </button>
-                                <button className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-medium hover:border-slate-300">
-                                    Bottom Left
-                                </button>
-                            </div>
-                        </div>
-
-                        <button className="w-full px-4 py-3 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700">
-                            Save Changes
-                        </button>
-                    </div>
-
-                    {/* Live Preview */}
-                    <div className="bg-slate-100 dark:bg-slate-900 rounded-2xl p-6 flex items-end justify-end min-h-[500px] relative">
-                        <div className="absolute top-4 left-4 text-sm font-medium text-slate-500">Live Preview</div>
-
-                        {/* Chat Widget Preview */}
-                        <div className="w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden">
-                            {/* Header */}
-                            <div className="bg-primary-600 text-white p-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                                        🤖
-                                    </div>
-                                    <div>
-                                        <p className="font-medium">{agent.name}</p>
-                                        <p className="text-sm text-white/70">Online</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Messages */}
-                            <div className="p-4 h-48 bg-slate-50 dark:bg-slate-900">
-                                <div className="bg-white dark:bg-slate-700 rounded-2xl rounded-tl-none p-3 text-sm max-w-[80%]">
-                                    Hi! How can I help you today?
-                                </div>
-                            </div>
-
-                            {/* Input */}
-                            <div className="p-3 border-t border-slate-200 dark:border-slate-700">
-                                <div className="flex items-center gap-2">
-                                    <input type="text" placeholder="Type a message..." className="flex-1 px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-sm" disabled />
-                                    <button className="p-2 bg-primary-600 text-white rounded-lg">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <WidgetBuilder agentId={id} agentName={agent.name} />
             )}
 
             {/* Settings Tab */}
