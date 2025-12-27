@@ -10,7 +10,7 @@ interface Message {
 }
 
 // Demo responses (no AI backend)
-const demoResponses: Record<string, string> = {
+const demoResponses = {
     services: `We offer a comprehensive suite of AI-powered customer support solutions:
 
 🤖 **AI Chat Assistant** - 24/7 automated customer support
@@ -61,7 +61,7 @@ function getResponse(message: string): string {
     if (lower.includes("service") || lower.includes("offer")) return demoResponses.services;
     if (lower.includes("support") || lower.includes("help") || lower.includes("contact")) return demoResponses.support;
     if (lower.includes("price") || lower.includes("pricing") || lower.includes("cost") || lower.includes("plan")) return demoResponses.pricing;
-    const defaults = demoResponses.default as string[];
+    const defaults = demoResponses.default;
     return defaults[Math.floor(Math.random() * defaults.length)];
 }
 
@@ -167,8 +167,8 @@ export default function ChatPage() {
                             className={`flex gap-3 message-in ${message.role === "user" ? "flex-row-reverse" : ""}`}
                         >
                             <div className={`w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center ${message.role === "assistant"
-                                    ? "bg-gradient-to-br from-primary-600 to-primary-400"
-                                    : "bg-slate-200 dark:bg-slate-700"
+                                ? "bg-gradient-to-br from-primary-600 to-primary-400"
+                                : "bg-slate-200 dark:bg-slate-700"
                                 }`}>
                                 {message.role === "assistant" ? (
                                     <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -184,8 +184,8 @@ export default function ChatPage() {
 
                             <div className={`max-w-[70%] ${message.role === "user" ? "text-right" : ""}`}>
                                 <div className={`px-4 py-3 rounded-2xl ${message.role === "assistant"
-                                        ? "bg-slate-100 dark:bg-slate-800 rounded-tl-md"
-                                        : "bg-gradient-to-br from-primary-600 to-primary-500 text-white rounded-tr-md"
+                                    ? "bg-slate-100 dark:bg-slate-800 rounded-tl-md"
+                                    : "bg-gradient-to-br from-primary-600 to-primary-500 text-white rounded-tr-md"
                                     }`}>
                                     <p className="whitespace-pre-wrap">{message.content}</p>
                                 </div>
